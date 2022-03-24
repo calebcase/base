@@ -1,7 +1,5 @@
 package maybe
 
-import "errors"
-
 // Type is the sum type for maybe.
 type Type[T any] interface {
 	isType(T)
@@ -22,36 +20,23 @@ func (n Nothing[T]) isType(_ T) {}
 // Maybe returns the default value `dflt` if `v` is Nothing. Otherwise it
 // returns the result of calling `f` on `v`.
 func Maybe[A, B any](dflt B, f func(a A) B, v Type[A]) B {
-	switch v.(type) {
-	case Just[A]:
-		return f(v.(Just[A]).Value)
-	case Nothing[A]:
-		return dflt
+	if j, ok := v.(Just[A]); ok {
+		return f(j.Value)
 	}
 
-	panic(errors.New("impossible"))
+	return dflt
 }
 
 func IsJust[A any](v Type[A]) bool {
-	switch v.(type) {
-	case Just[A]:
-		return true
-	case Nothing[A]:
-		return false
-	}
+	_, ok := v.(Just[A])
 
-	panic(errors.New("impossible"))
+	return ok
 }
 
 func IsNothing[A any](v Type[A]) bool {
-	switch v.(type) {
-	case Just[A]:
-		return false
-	case Nothing[A]:
-		return true
-	}
+	_, ok := v.(Nothing[A])
 
-	panic(errors.New("impossible"))
+	return ok
 }
 
 func FromJust[A any](v Type[A]) A {
@@ -59,14 +44,11 @@ func FromJust[A any](v Type[A]) A {
 }
 
 func FromMaybe[A any](dflt A, v Type[A]) A {
-	switch v.(type) {
-	case Just[A]:
-		return v.(Just[A]).Value
-	case Nothing[A]:
-		return dflt
+	if j, ok := v.(Just[A]); ok {
+		return j.Value
 	}
 
-	panic(errors.New("impossible"))
+	return dflt
 }
 
 func ListToMaybe[A any](vs []A) Type[A] {
@@ -78,14 +60,11 @@ func ListToMaybe[A any](vs []A) Type[A] {
 }
 
 func MaybeToList[A any](v Type[A]) []A {
-	switch v.(type) {
-	case Just[A]:
-		return []A{v.(Just[A]).Value}
-	case Nothing[A]:
-		return []A{}
+	if j, ok := v.(Just[A]); ok {
+		return []A{j.Value}
 	}
 
-	panic(errors.New("impossible"))
+	return []A{}
 }
 
 func CatMaybes[A any](vs []Type[A]) []A {

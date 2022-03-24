@@ -30,6 +30,7 @@ func ExampleMaybe() {
 	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[float32](maybe.Nothing[int]{})))
 	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[float32](maybe.Nothing[float32]{})))
 	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[int](maybe.Just[float32]{3})))
+	//fmt.Println(maybe.Maybe[int, bool](false, odd, maybe.Just[float32]{3}))
 
 	// str returns the string even or odd for the value.
 	str := func(v int) string {
