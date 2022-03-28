@@ -13,24 +13,24 @@ func ExampleMaybe() {
 		return v%2 != 0
 	}
 
-	// NOTE: The additional type hinting `maybe.Type[int](...)` is currently
-	// necessary because of a limitation in Go's type inferencing. The
-	// hinting may eventually be unnecessary when/if the type inferencing
-	// improves for generics. Alternately the types can be explicitly set
-	// on the Maybe function instead.
-	fmt.Println(maybe.Maybe(false, odd, maybe.Type[int](maybe.Just[int]{3})))
-	fmt.Println(maybe.Maybe[int, bool](false, odd, maybe.Just[int]{3}))
+	// NOTE: The additional type hinting `maybe.Apply[int](...)` is
+	// currently necessary because of a limitation in Go's type
+	// inferencing. The hinting may eventually be unnecessary when/if the
+	// type inferencing improves for generics. Alternately the types can be
+	// explicitly set on the Maybe function instead.
+	fmt.Println(maybe.Apply(false, odd, maybe.Maybe[int](maybe.Just[int]{3})))
+	fmt.Println(maybe.Apply[int, bool](false, odd, maybe.Just[int]{3}))
 
-	fmt.Println(maybe.Maybe(false, odd, maybe.Type[int](maybe.Nothing[int]{})))
-	fmt.Println(maybe.Maybe[int, bool](false, odd, maybe.Nothing[int]{}))
+	fmt.Println(maybe.Apply(false, odd, maybe.Maybe[int](maybe.Nothing[int]{})))
+	fmt.Println(maybe.Apply[int, bool](false, odd, maybe.Nothing[int]{}))
 
 	// These all produce the desired compile time error (because the types
 	// are mismatched):
 	//
-	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[float32](maybe.Nothing[int]{})))
-	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[float32](maybe.Nothing[float32]{})))
-	//fmt.Println(maybe.Maybe(false, odd, maybe.Type[int](maybe.Just[float32]{3})))
-	//fmt.Println(maybe.Maybe[int, bool](false, odd, maybe.Just[float32]{3}))
+	//fmt.Println(maybe.Apply(false, odd, maybe.Maybe[float32](maybe.Nothing[int]{})))
+	//fmt.Println(maybe.Apply(false, odd, maybe.Maybe[float32](maybe.Nothing[float32]{})))
+	//fmt.Println(maybe.Apply(false, odd, maybe.Maybe[int](maybe.Just[float32]{3})))
+	//fmt.Println(maybe.Apply[int, bool](false, odd, maybe.Just[float32]{3}))
 
 	// str returns the string even or odd for the value.
 	str := func(v int) string {
@@ -41,9 +41,9 @@ func ExampleMaybe() {
 		return "odd"
 	}
 
-	fmt.Println(maybe.Maybe("unknown", str, maybe.Type[int](maybe.Just[int]{3})))
-	fmt.Println(maybe.Maybe("unknown", str, maybe.Type[int](maybe.Just[int]{4})))
-	fmt.Println(maybe.Maybe("unknown", str, maybe.Type[int](maybe.Nothing[int]{})))
+	fmt.Println(maybe.Apply("unknown", str, maybe.Maybe[int](maybe.Just[int]{3})))
+	fmt.Println(maybe.Apply("unknown", str, maybe.Maybe[int](maybe.Just[int]{4})))
+	fmt.Println(maybe.Apply("unknown", str, maybe.Maybe[int](maybe.Nothing[int]{})))
 
 	// Output:
 	// true
@@ -56,7 +56,7 @@ func ExampleMaybe() {
 }
 
 func ExampleCatMaybes() {
-	values := []maybe.Type[int]{
+	values := []maybe.Maybe[int]{
 		maybe.Just[int]{1},
 		maybe.Nothing[int]{},
 		maybe.Just[int]{3},
@@ -75,7 +75,7 @@ func ExampleMapMaybes() {
 		"3",
 	}
 
-	maybeInt := func(s string) maybe.Type[int] {
+	maybeInt := func(s string) maybe.Maybe[int] {
 		i, err := strconv.Atoi(s)
 		if err != nil {
 			return maybe.Nothing[int]{}

@@ -1,6 +1,6 @@
 package maybe
 
-func FMap[A, B any](f func(A) B, v Type[A]) Type[B] {
+func FMap[A, B any](f func(A) B, v Maybe[A]) Maybe[B] {
 	if j, ok := v.(Just[A]); ok {
 		return Just[B]{f(j.Value)}
 	}
@@ -8,7 +8,7 @@ func FMap[A, B any](f func(A) B, v Type[A]) Type[B] {
 	return Nothing[B]{}
 }
 
-func FReplace[A, B any](a A, v Type[B]) Type[A] {
+func FReplace[A, B any](a A, v Maybe[B]) Maybe[A] {
 	if _, ok := v.(Just[B]); ok {
 		return Just[A]{a}
 	}
