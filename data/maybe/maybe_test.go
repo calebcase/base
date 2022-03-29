@@ -3,8 +3,12 @@ package maybe_test
 import (
 	"fmt"
 	"strconv"
+	"testing"
 
+	"github.com/calebcase/base/data/function"
 	"github.com/calebcase/base/data/maybe"
+	"github.com/calebcase/curry"
+	"github.com/stretchr/testify/require"
 )
 
 func ExampleMaybe() {
@@ -88,4 +92,71 @@ func ExampleMapMaybes() {
 
 	// Output:
 	// [1 3]
+}
+
+func ExampleType_FMap() {
+	flip := func(a bool) bool {
+		return !a
+	}
+
+	flop := maybe.Type[bool, bool, bool]{}.FMap(flip, maybe.Just[bool]{true})
+	fmt.Println(flop)
+
+	stringify := func(a bool) string {
+		return fmt.Sprint(a)
+	}
+
+	str := maybe.Type[bool, string, bool]{}.FMap(stringify, maybe.Just[bool]{true})
+	fmt.Println(str)
+
+	fmt.Println(maybe.Type[bool, string, bool]{}.FMap(stringify, maybe.Nothing[bool]{}))
+
+	// Output:
+	// {false}
+	// {true}
+	// {}
+}
+
+func ExampleType_FReplace() {
+	fmt.Println(maybe.Type[bool, bool, bool]{}.FReplace(false, maybe.Just[bool]{true}))
+	fmt.Println(maybe.Type[string, bool, bool]{}.FReplace("done", maybe.Just[bool]{true}))
+	fmt.Println(maybe.Type[string, bool, bool]{}.FReplace("done", maybe.Nothing[bool]{}))
+
+	// Output:
+	// {false}
+	// {done}
+	// {}
+}
+
+func Test(t *testing.T) {
+	mt := maybe.Type[bool, bool, bool]{}
+
+	t.Run("functor", func(t *testing.T) {
+		t.Run("fmap", func(t *testing.T) {
+			t.Run("identity", func(t *testing.T) {
+				// fmap id == id
+
+				left := curry.A2R1(mt.FMap)(function.Id[bool])
+				right := function.Id[maybe.Maybe[bool]]
+
+				require.Equal(t, left(maybe.Just[bool]{true}), right(maybe.Just[bool]{true}))
+			})
+
+			t.Run("compose", func(t *testing.T) {
+				// fmap (f . g) == fmap f . fmap g
+
+				f := function.Id[bool]
+				g := function.Id[bool]
+
+				left := curry.A2R1(mt.FMap)(
+					curry.A3R1(function.Compose[bool, bool, bool])(f)(g),
+				)
+				right := curry.A3R1(
+					function.Compose[maybe.Maybe[bool], maybe.Maybe[bool], maybe.Maybe[bool]],
+				)(curry.A2R1(mt.FMap)(f))(curry.A2R1(mt.FMap)(g))
+
+				require.Equal(t, left(maybe.Just[bool]{true}), right(maybe.Just[bool]{true}))
+			})
+		})
+	})
 }

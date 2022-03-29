@@ -1,5 +1,83 @@
 package maybe
 
+import (
+	"github.com/calebcase/base/control/monad"
+)
+
+type Class[A, B, C any] interface {
+	monad.Class[A, B, C, Maybe[func(A) B], Maybe[A], Maybe[B], Maybe[C]]
+}
+
+type Type[A, B, C any] struct{}
+
+var _ Class[int, int, int] = Type[int, int, int]{}
+
+func (t Type[A, B, C]) FMap(f func(A) B, v Maybe[A]) Maybe[B] {
+	if j, ok := v.(Just[A]); ok {
+		return Just[B]{f(j.Value)}
+	}
+
+	return Nothing[B]{}
+}
+
+func (t Type[A, B, C]) FReplace(a A, v Maybe[B]) Maybe[A] {
+	if _, ok := v.(Just[B]); ok {
+		return Just[A]{a}
+	}
+
+	return Nothing[A]{}
+}
+
+func (t Type[A, B, C]) Pure(x A) Maybe[A] {
+	return Just[A]{x}
+}
+
+func (t Type[A, B, C]) Apply(f Maybe[func(A) B], m Maybe[A]) Maybe[B] {
+	if jf, ok := f.(Just[func(A) B]); ok {
+		return t.FMap(jf.Value, m)
+	}
+
+	return Nothing[B]{}
+}
+
+func (t Type[A, B, C]) LiftA2(f func(A, B) C, x Maybe[A], y Maybe[B]) Maybe[C] {
+	jx, ok := x.(Just[A])
+	if !ok {
+		return Nothing[C]{}
+	}
+
+	jy, ok := y.(Just[B])
+	if !ok {
+		return Nothing[C]{}
+	}
+
+	return Just[C]{f(jx.Value, jy.Value)}
+}
+
+func (t Type[A, B, C]) ApplyR(x Maybe[A], y Maybe[B]) Maybe[B] {
+	return y
+}
+
+func (t Type[A, B, C]) ApplyL(x Maybe[A], y Maybe[B]) Maybe[A] {
+	return x
+}
+
+func (t Type[A, B, C]) Bind(x Maybe[A], k func(A) Maybe[B]) Maybe[B] {
+	if jx, ok := x.(Just[A]); ok {
+		return k(jx.Value)
+	}
+
+	return Nothing[B]{}
+}
+
+func (t Type[A, B, C]) Then(x Maybe[A], y Maybe[B]) Maybe[B] {
+	return t.ApplyR(x, y)
+}
+
+func (t Type[A, B, C]) Return(x A) Maybe[A] {
+	return t.Pure(x)
+}
+
 // Maybe is the sum type for maybe.
 type Maybe[T any] interface {
 	isMaybe(T)
