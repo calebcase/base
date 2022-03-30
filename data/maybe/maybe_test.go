@@ -99,17 +99,17 @@ func ExampleType_FMap() {
 		return !a
 	}
 
-	flop := maybe.Type[bool, bool, bool]{}.FMap(flip, maybe.Just[bool]{true})
+	flop := maybe.NewType[bool, bool, bool]().FMap(flip, maybe.Just[bool]{true})
 	fmt.Println(flop)
 
 	stringify := func(a bool) string {
 		return fmt.Sprint(a)
 	}
 
-	str := maybe.Type[bool, string, bool]{}.FMap(stringify, maybe.Just[bool]{true})
+	str := maybe.NewType[bool, string, bool]().FMap(stringify, maybe.Just[bool]{true})
 	fmt.Println(str)
 
-	fmt.Println(maybe.Type[bool, string, bool]{}.FMap(stringify, maybe.Nothing[bool]{}))
+	fmt.Println(maybe.NewType[bool, string, bool]().FMap(stringify, maybe.Nothing[bool]{}))
 
 	// Output:
 	// {false}
@@ -118,9 +118,9 @@ func ExampleType_FMap() {
 }
 
 func ExampleType_FReplace() {
-	fmt.Println(maybe.Type[bool, bool, bool]{}.FReplace(false, maybe.Just[bool]{true}))
-	fmt.Println(maybe.Type[string, bool, bool]{}.FReplace("done", maybe.Just[bool]{true}))
-	fmt.Println(maybe.Type[string, bool, bool]{}.FReplace("done", maybe.Nothing[bool]{}))
+	fmt.Println(maybe.NewType[bool, bool, bool]().FReplace(false, maybe.Just[bool]{true}))
+	fmt.Println(maybe.NewType[string, bool, bool]().FReplace("done", maybe.Just[bool]{true}))
+	fmt.Println(maybe.NewType[string, bool, bool]().FReplace("done", maybe.Nothing[bool]{}))
 
 	// Output:
 	// {false}
@@ -129,7 +129,7 @@ func ExampleType_FReplace() {
 }
 
 func Test(t *testing.T) {
-	mt := maybe.Type[bool, bool, bool]{}
+	mt := maybe.NewType[bool, bool, bool]()
 
 	t.Run("functor", func(t *testing.T) {
 		t.Run("fmap", func(t *testing.T) {

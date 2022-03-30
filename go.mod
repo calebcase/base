@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/calebcase/curry v0.2.0
 	github.com/stretchr/testify v1.7.1
+	golang.org/x/exp v0.0.0-20220328175248-053ad81199eb
 )
 
 require (

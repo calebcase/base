@@ -10,6 +10,10 @@ type Class[A any] interface {
 
 type Type[A any, L []A] struct{}
 
+func NewType[A any, L []A]() Type[A, L] {
+	return Type[A, L]{}
+}
+
 var _ Class[[]int] = Type[int, []int]{}
 
 func (t Type[A, L]) SAssoc(x, y L) L {

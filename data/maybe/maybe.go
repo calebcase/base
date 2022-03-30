@@ -10,6 +10,10 @@ type Class[A, B, C any] interface {
 
 type Type[A, B, C any] struct{}
 
+func NewType[A, B, C any]() Type[A, B, C] {
+	return Type[A, B, C]{}
+}
+
 var _ Class[int, int, int] = Type[int, int, int]{}
 
 func (t Type[A, B, C]) FMap(f func(A) B, v Maybe[A]) Maybe[B] {
