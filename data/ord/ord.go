@@ -23,6 +23,8 @@ type Class[A any] interface {
 }
 
 type Type[A any] struct {
+	eq.Type[A]
+
 	compareFn CompareFn[A]
 }
 
@@ -34,16 +36,12 @@ type CompareFn[A any] func(A, A) Ordering
 // NewType derives a type implementing Class.
 func NewType[A any](compareFn CompareFn[A]) Type[A] {
 	return Type[A]{
+		Type: eq.NewType[A](func(x, y A) bool {
+			return compareFn(x, y) == EQ{}
+		}),
+
 		compareFn: compareFn,
 	}
-}
-
-func (t Type[A]) Equal(x, y A) bool {
-	return t.compareFn(x, y) == EQ{}
-}
-
-func (t Type[A]) NE(x, y A) bool {
-	return !t.Equal(x, y)
 }
 
 func (t Type[A]) Compare(x, y A) Ordering {
