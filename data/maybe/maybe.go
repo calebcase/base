@@ -2,19 +2,32 @@ package maybe
 
 import (
 	"github.com/calebcase/base/control/monad"
+	"github.com/calebcase/base/data"
 )
 
 type Class[A, B, C any] interface {
 	monad.Class[A, B, C, Maybe[func(A) B], Maybe[A], Maybe[B], Maybe[C]]
+
+	NewJust(A) Just[A]
+	NewNothing() Nothing[A]
 }
 
 type Type[A, B, C any] struct{}
+
+// Ensure Type implements Class.
+var _ Class[int, int, int] = Type[int, int, int]{}
 
 func NewType[A, B, C any]() Type[A, B, C] {
 	return Type[A, B, C]{}
 }
 
-var _ Class[int, int, int] = Type[int, int, int]{}
+func (t Type[A, B, C]) NewJust(x A) Just[A] {
+	return Just[A]{x}
+}
+
+func (t Type[A, B, C]) NewNothing() Nothing[A] {
+	return Nothing[A]{}
+}
 
 func (t Type[A, B, C]) FMap(f func(A) B, v Maybe[A]) Maybe[B] {
 	if j, ok := v.(Just[A]); ok {
@@ -85,6 +98,8 @@ func (t Type[A, B, C]) Return(x A) Maybe[A] {
 // Maybe is the sum type for maybe.
 type Maybe[T any] interface {
 	isMaybe(T)
+
+	data.Data[T]
 }
 
 // Just contains a value.
@@ -94,10 +109,26 @@ type Just[T any] struct {
 
 func (j Just[T]) isMaybe(_ T) {}
 
+func (j Just[T]) DValue() T {
+	return j.Value
+}
+
+func (j Just[T]) DRest() data.Data[T] {
+	return nil
+}
+
 // Nothing indicates no value is present.
 type Nothing[T any] struct{}
 
 func (n Nothing[T]) isMaybe(_ T) {}
+
+func (n Nothing[T]) DValue() T {
+	panic(data.ErrNoValue)
+}
+
+func (n Nothing[T]) DRest() data.Data[T] {
+	return nil
+}
 
 // Apply returns the default value `dflt` if `v` is Nothing. Otherwise it
 // returns the result of calling `f` on `v`.

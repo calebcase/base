@@ -23,56 +23,56 @@ func ExampleConst() {
 }
 
 func ExampleCompose() {
-	fmt.Println(function.Compose(
-		func(x int) string {
-			return fmt.Sprint(x)
-		},
-		func(y float32) int {
-			return int(y)
-		},
-		3.14,
-	))
+	i2s := func(x int) string {
+		return fmt.Sprint(x)
+	}
+	f2i := func(y float32) int {
+		return int(y)
+	}
+
+	v := function.Compose(i2s, f2i)(3.14)
+	fmt.Printf("%v %T", v, v)
 
 	// Output:
-	// 3
+	// 3 string
 }
 
 func ExampleFlip() {
-	fmt.Println(function.Flip(
-		func(a, b string) string {
-			return a + " " + b
-		},
-		"world",
-		"hello",
-	))
+	cat := func(a, b string) string {
+		return a + "\n" + b
+	}
+
+	v := function.Flip(cat)("world", "hello")
+	fmt.Printf("%v\n%T", v, v)
 
 	// Output:
-	// hello world
+	// hello
+	// world
+	// string
 }
 
 func ExampleApply() {
-	fmt.Println(function.Apply(
-		func(x int) int {
-			return x + 1
-		},
-		2,
-	))
+	increment := func(x int) int {
+		return x + 1
+	}
+
+	v := function.Apply(increment, 2)
+	fmt.Printf("%v %T", v, v)
 
 	// Output:
-	// 3
+	// 3 int
 }
 
 func ExampleOn() {
-	v := function.On(
-		func(a, b string) string {
-			return a + b
-		},
-		func(x int) string {
-			return fmt.Sprint(x)
-		},
-		4,
-		2,
-	)
+	concat := func(a, b string) string {
+		return a + b
+	}
+
+	i2s := func(x int) string {
+		return fmt.Sprint(x)
+	}
+
+	v := function.On(concat, i2s)(4, 2)
 	fmt.Printf("%v %T", v, v)
 
 	// Output:

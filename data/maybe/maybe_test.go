@@ -128,6 +128,7 @@ func ExampleType_FReplace() {
 	// {}
 }
 
+// FIXME convert to conform test...
 func Test(t *testing.T) {
 	mt := maybe.NewType[bool, bool, bool]()
 
@@ -149,11 +150,12 @@ func Test(t *testing.T) {
 				g := function.Id[bool]
 
 				left := curry.A2R1(mt.FMap)(
-					curry.A3R1(function.Compose[bool, bool, bool])(f)(g),
+					function.Compose(f, g),
 				)
-				right := curry.A3R1(
-					function.Compose[maybe.Maybe[bool], maybe.Maybe[bool], maybe.Maybe[bool]],
-				)(curry.A2R1(mt.FMap)(f))(curry.A2R1(mt.FMap)(g))
+				right := function.Compose(
+					curry.A2R1(mt.FMap)(f),
+					curry.A2R1(mt.FMap)(g),
+				)
 
 				require.Equal(t, left(maybe.Just[bool]{true}), right(maybe.Just[bool]{true}))
 			})

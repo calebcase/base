@@ -1,6 +1,8 @@
 package applicative
 
-import "github.com/calebcase/base/data/functor"
+import (
+	"github.com/calebcase/base/data/functor"
+)
 
 type F[T any] interface{}
 
