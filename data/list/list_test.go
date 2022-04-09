@@ -3,30 +3,43 @@ package list_test
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
+	"io"
 	"testing"
 
-	"github.com/calebcase/base/data/eq"
 	"github.com/calebcase/base/data/list"
 )
 
-func i2b(is []int) (bs []byte) {
-	buf := bytes.NewBuffer(bs)
+func i2b(is []int32) (bs []byte) {
+	buf := &bytes.Buffer{}
 
 	for _, i := range is {
-		binary.Write(buf, binary.BigEndian, i)
+		err := binary.Write(buf, binary.BigEndian, i)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	return
+	return buf.Bytes()
 }
 
-func b2i(bs []byte) (is []int) {
+func b2i(bs []byte) (is []int32) {
+	is = []int32{}
 	buf := bytes.NewBuffer(bs)
 
 	for {
-		var i int
+		var i int32
 		err := binary.Read(buf, binary.BigEndian, &i)
 		if err != nil {
-			break
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			if errors.Is(err, io.ErrUnexpectedEOF) {
+				break
+			}
+
+			panic(err)
 		}
 
 		is = append(is, i)
@@ -35,8 +48,8 @@ func b2i(bs []byte) (is []int) {
 	return
 }
 
-func FuzzConformInt(f *testing.F) {
-	l := list.NewType[int](eq.NewType(eq.Comparable[int]))
+func FuzzConformInt32(f *testing.F) {
+	l := list.NewType[int32]()
 
 	type TC struct {
 		x []byte
@@ -45,9 +58,9 @@ func FuzzConformInt(f *testing.F) {
 	}
 
 	tcs := []TC{
-		{i2b([]int{1}), i2b([]int{2}), i2b([]int{3})},
-		{i2b([]int{1, 2, 3}), i2b([]int{1, 2, 3}), i2b([]int{1, 2, 3})},
-		{i2b([]int{0, 0, 0}), i2b([]int{0, 0, 0}), i2b([]int{0, 0, 0})},
+		{i2b([]int32{1}), i2b([]int32{2}), i2b([]int32{3})},
+		{i2b([]int32{1, 2, 3}), i2b([]int32{1, 2, 3}), i2b([]int32{1, 2, 3})},
+		{i2b([]int32{0, 0, 0}), i2b([]int32{0, 0, 0}), i2b([]int32{0, 0, 0})},
 	}
 
 	for _, tc := range tcs {
@@ -55,12 +68,12 @@ func FuzzConformInt(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, x, y, z []byte) {
-		list.Conform[int](l)(t, b2i(x), b2i(y), b2i(z))
+		list.Conform[int32](l)(t, b2i(x), b2i(y), b2i(z))
 	})
 }
 
 func FuzzConformByte(f *testing.F) {
-	l := list.NewType[byte](eq.NewType(eq.Comparable[byte]))
+	l := list.NewType[byte]()
 
 	type TC struct {
 		x []byte
@@ -69,9 +82,9 @@ func FuzzConformByte(f *testing.F) {
 	}
 
 	tcs := []TC{
-		{i2b([]int{1}), i2b([]int{2}), i2b([]int{3})},
-		{i2b([]int{1, 2, 3}), i2b([]int{1, 2, 3}), i2b([]int{1, 2, 3})},
-		{i2b([]int{0, 0, 0}), i2b([]int{0, 0, 0}), i2b([]int{0, 0, 0})},
+		{i2b([]int32{1}), i2b([]int32{2}), i2b([]int32{3})},
+		{i2b([]int32{1, 2, 3}), i2b([]int32{1, 2, 3}), i2b([]int32{1, 2, 3})},
+		{i2b([]int32{0, 0, 0}), i2b([]int32{0, 0, 0}), i2b([]int32{0, 0, 0})},
 	}
 
 	for _, tc := range tcs {

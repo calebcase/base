@@ -16,32 +16,16 @@ type Type[
 	A any,
 ] struct {
 	monoid.Type[List[A]]
-
-	ea eq.Class[A]
 }
 
 // Ensure Type implements Class.
 var _ Class[int] = Type[int]{}
-var _ Class[int] = NewType[int](eq.NewType(eq.Comparable[int]))
 
 func NewType[
 	A any,
-](ea eq.Class[A]) Type[A] {
+]() Type[A] {
 	return Type[A]{
 		Type: monoid.NewType[List[A]](
-			func(x, y List[A]) bool {
-				if len(x) != len(y) {
-					return false
-				}
-
-				for i := 0; i < len(x); i++ {
-					if ea.NE(x[i], y[i]) {
-						return false
-					}
-				}
-
-				return true
-			},
 			func(x, y List[A]) List[A] {
 				r := make(List[A], 0, len(x)+len(y))
 				r = append(List[A]{}, x...)
@@ -53,7 +37,6 @@ func NewType[
 				return List[A]{}
 			},
 		),
-		ea: ea,
 	}
 }
 
@@ -72,6 +55,24 @@ func (l List[A]) DRest() data.Data[A] {
 	}
 
 	return nil
+}
+
+// NewEqualFn returns a list equality checking function given the eq.Class for
+// the type A.
+func NewEqualFn[A any](e eq.Class[A]) func(x, y List[A]) bool {
+	return func(x, y List[A]) bool {
+		if len(x) != len(y) {
+			return false
+		}
+
+		for i := 0; i < len(x); i++ {
+			if e.NE(x[i], y[i]) {
+				return false
+			}
+		}
+
+		return true
+	}
 }
 
 // Conform returns a function testing if the implementation abides by its laws.

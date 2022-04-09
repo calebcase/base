@@ -3,7 +3,6 @@ package foldable_test
 import (
 	"fmt"
 
-	"github.com/calebcase/base/data/eq"
 	"github.com/calebcase/base/data/foldable"
 	"github.com/calebcase/base/data/function"
 	"github.com/calebcase/base/data/list"
@@ -44,7 +43,7 @@ func ExampleNewType() {
 
 		ll := list.List[list.List[int]]{{1, 2, 3}, {4, 5}, {6}, {}}
 
-		lt := list.NewType[int](eq.NewType(eq.Comparable[int]))
+		lt := list.NewType[int]()
 
 		fmt.Println(t.Fold(lt, ll))
 		fmt.Println(t.FoldMap(lt, function.Id[list.List[int]], ll))

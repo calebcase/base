@@ -3,7 +3,6 @@ package monoid
 import (
 	"testing"
 
-	"github.com/calebcase/base/data/eq"
 	"github.com/calebcase/base/data/semigroup"
 	"github.com/stretchr/testify/require"
 )
@@ -17,9 +16,6 @@ type Class[A any] interface {
 }
 
 type Type[A any] struct {
-	eq.Type[A]
-
-	equalFn  eq.EqualFn[A]
 	sAssocFn semigroup.SAssocFn[A]
 	mEmptyFn MEmptyFn[A]
 }
@@ -27,13 +23,10 @@ type Type[A any] struct {
 type MEmptyFn[A any] func() A
 
 func NewType[A any](
-	equalFn eq.EqualFn[A],
 	sAssocFn semigroup.SAssocFn[A],
 	mEmptyFn MEmptyFn[A],
 ) Type[A] {
 	return Type[A]{
-		Type: eq.NewType(equalFn),
-
 		sAssocFn: sAssocFn,
 		mEmptyFn: mEmptyFn,
 	}
@@ -73,17 +66,11 @@ func Conform[A any, CA Class[A]](c CA) func(t *testing.T, x, y, z A) {
 		})
 
 		t.Run("right identity", func(t *testing.T) {
-			require.True(t, c.Equal(
-				c.SAssoc(x, c.MEmpty()),
-				x,
-			))
+			require.Equal(t, c.SAssoc(x, c.MEmpty()), x)
 		})
 
 		t.Run("left identity", func(t *testing.T) {
-			require.True(t, c.Equal(
-				c.SAssoc(c.MEmpty(), x),
-				x,
-			))
+			require.Equal(t, c.SAssoc(c.MEmpty(), x), x)
 		})
 
 		// FIXME: Needs a working version of foldr and/or a resolution
