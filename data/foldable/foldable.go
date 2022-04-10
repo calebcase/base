@@ -8,16 +8,21 @@ import (
 type Class[
 	A any,
 	B any,
+
+	MA monoid.Class[A],
+	MB monoid.Class[B],
+
+	DA data.Data[A],
 ] interface {
 	//Fold(TM) M
 	//FoldMap(func(A) M, TA) M
-	Fold(monoid.Class[A], data.Data[A]) A
-	FoldMap(monoid.Class[B], func(A) B, data.Data[A]) B
+	Fold(MA, DA) A
+	FoldMap(MB, func(A) B, DA) B
 
 	//FoldR(func(A, B) B, B, TA) B
 	//FoldL(func(B, A) B, B, TA) B
-	FoldR(func(A, B) B, B, data.Data[A]) B
-	FoldL(func(B, A) B, B, data.Data[A]) B
+	FoldR(func(A, B) B, B, DA) B
+	FoldL(func(B, A) B, B, DA) B
 
 	//ToList(TA) []A
 	//Null(TA) bool
@@ -38,7 +43,13 @@ type Type[
 ] struct{}
 
 // Ensure Type implements Class.
-var _ Class[int, int] = Type[int, int]{}
+var _ Class[
+	int,
+	int,
+	monoid.Class[int],
+	monoid.Class[int],
+	data.Data[int],
+] = Type[int, int]{}
 
 func NewType[
 	A any,
