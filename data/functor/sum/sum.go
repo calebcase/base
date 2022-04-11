@@ -28,8 +28,12 @@ type InL[F, G, A any] struct {
 
 func (il InL[F, G, A]) isSum(_ F, _ G, _ A) {}
 
-func (il InL[F, G, A]) DValue() Sum[F, G, A] {
-	return il
+func (il InL[F, G, A]) DEmpty() bool {
+	return false
+}
+
+func (il InL[F, G, A]) DValue() A {
+	return il.Value
 }
 
 func (il InL[F, G, A]) DRest() data.Data[Sum[F, G, A]] {
@@ -44,8 +48,12 @@ type InR[F, G, A any] struct {
 
 func (ir InR[F, G, A]) isSum(_ F, _ G, _ A) {}
 
-func (ir InR[F, G, A]) DValue() Sum[F, G, A] {
-	return ir
+func (ir InR[F, G, A]) DEmpty() bool {
+	return false
+}
+
+func (ir InR[F, G, A]) DValue() A {
+	return ir.Value
 }
 
 func (ir InR[F, G, A]) DRest() data.Data[Sum[F, G, A]] {

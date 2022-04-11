@@ -42,6 +42,10 @@ var _ data.Data[int] = Left[int, string]{}
 
 func (l Left[A, B]) isEither(_ A, _ B) {}
 
+func (l Left[A, B]) DEmpty() bool {
+	return false
+}
+
 func (l Left[A, B]) DValue() A {
 	return l.Value
 }
@@ -59,6 +63,10 @@ type Right[A, B any] struct {
 var _ data.Data[string] = Right[int, string]{}
 
 func (r Right[A, B]) isEither(_ A, _ B) {}
+
+func (r Right[A, B]) DEmpty() bool {
+	return false
+}
 
 func (r Right[A, B]) DValue() B {
 	return r.Value

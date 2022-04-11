@@ -111,6 +111,10 @@ type Just[T any] struct {
 
 func (j Just[T]) isMaybe(_ T) {}
 
+func (j Just[T]) DEmpty() bool {
+	return false
+}
+
 func (j Just[T]) DValue() T {
 	return j.Value
 }
@@ -123,6 +127,10 @@ func (j Just[T]) DRest() data.Data[T] {
 type Nothing[T any] struct{}
 
 func (n Nothing[T]) isMaybe(_ T) {}
+
+func (n Nothing[T]) DEmpty() bool {
+	return true
+}
 
 func (n Nothing[T]) DValue() T {
 	panic(data.ErrNoValue)

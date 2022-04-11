@@ -6,6 +6,9 @@ var ErrNoValue = errors.New("data: no value")
 
 // Data provides a general way to get values from a sum type.
 type Data[A any] interface {
+	// DEmpty returns true if the value is empty.
+	DEmpty() bool
+
 	// DValue returns the "first" value v from the sum type. If no value is
 	// present it should panic with ErrNoValue.
 	DValue() (v A)

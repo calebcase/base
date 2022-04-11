@@ -45,6 +45,10 @@ type List[A any] []A
 // Ensure List implements data.Data.
 var _ data.Data[int] = List[int]{}
 
+func (l List[A]) DEmpty() bool {
+	return len(l) == 0
+}
+
 func (l List[A]) DValue() A {
 	return l[0]
 }
