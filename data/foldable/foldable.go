@@ -5,6 +5,8 @@ import (
 	"github.com/calebcase/base/data/monoid"
 )
 
+type T[T any] interface{}
+
 type Class[
 	A any,
 	B any,
@@ -12,19 +14,15 @@ type Class[
 	MA monoid.Class[A],
 	MB monoid.Class[B],
 
-	DA data.Data[A],
+	TA T[A],
 ] interface {
-	//Fold(TM) M
-	//FoldMap(func(A) M, TA) M
-	Fold(MA, DA) A
-	FoldMap(MB, func(A) B, DA) B
+	Fold(MA, TA) A
+	FoldMap(MB, func(A) B, TA) B
 
-	//FoldR(func(A, B) B, B, TA) B
-	//FoldL(func(B, A) B, B, TA) B
-	FoldR(func(A, B) B, B, DA) B
-	FoldL(func(B, A) B, B, DA) B
+	FoldR(func(A, B) B, B, TA) B
+	FoldL(func(B, A) B, B, TA) B
 
-	//ToList(TA) []A
+	ToList(TA) []A
 	//Null(TA) bool
 	//Length(TA) int
 
@@ -99,4 +97,10 @@ func (t Type[A, B]) FoldL(f func(B, A) B, z B, ta data.Data[A]) B {
 	}
 
 	return result
+}
+
+func (t Type[A, B]) ToList(ta data.Data[A]) (result []A) {
+	return NewType[A, []A]().FoldL(func(l []A, x A) []A {
+		return append(l, x)
+	}, []A{}, ta)
 }
