@@ -1,6 +1,8 @@
 package maybe
 
 import (
+	"testing"
+
 	"github.com/calebcase/base/control/monad"
 	"github.com/calebcase/base/data"
 )
@@ -202,4 +204,17 @@ func MapMaybes[A, B any](f func(A) Maybe[B], vs []A) (rs []B) {
 	}
 
 	return rs
+}
+
+// Conform returns a function testing if the implementation abides by its laws.
+func Conform[
+	A any,
+
+	CA Class[A, A, A],
+](c CA) func(t *testing.T, x A) {
+	return func(t *testing.T, x A) {
+		t.Run("monad.Conform", func(t *testing.T) {
+			monad.Conform[A, Maybe[func(A) A], Maybe[A]](c)(t, x)
+		})
+	}
 }

@@ -3,7 +3,6 @@ package functor
 import (
 	"testing"
 
-	"github.com/calebcase/base/data"
 	"github.com/calebcase/base/data/function"
 	"github.com/calebcase/curry"
 	"github.com/stretchr/testify/require"
@@ -23,16 +22,19 @@ type Class[
 }
 
 // Conform returns a function testing if the implementation abides by its laws.
-func Conform[A any, CA Class[A, A, data.Data[A], data.Data[A]]](c CA) func(t *testing.T, x data.Data[A]) {
-	return func(t *testing.T, x data.Data[A]) {
+func Conform[
+	A any,
+
+	FA F[A],
+
+	CA Class[A, A, FA, FA],
+](c CA) func(t *testing.T, x FA) {
+	return func(t *testing.T, x FA) {
 		t.Run("identity", func(t *testing.T) {
 			// fmap id == id
 
 			left := curry.A2R1(c.FMap)(function.Id[A])
-			right := function.Id[data.Data[A]]
-
-			left(x)
-			right(x)
+			right := function.Id[FA]
 
 			require.Equal(t, left(x), right(x))
 		})

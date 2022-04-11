@@ -5,10 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/calebcase/base/data/function"
 	"github.com/calebcase/base/data/maybe"
-	"github.com/calebcase/curry"
-	"github.com/stretchr/testify/require"
 )
 
 func ExampleMaybe() {
@@ -128,37 +125,41 @@ func ExampleType_FReplace() {
 	// {}
 }
 
-// FIXME convert to conform test...
-func Test(t *testing.T) {
-	mt := maybe.NewType[bool, bool, bool]()
+func FuzzConformInt(f *testing.F) {
+	m := maybe.NewType[int, int, int]()
 
-	t.Run("functor", func(t *testing.T) {
-		t.Run("fmap", func(t *testing.T) {
-			t.Run("identity", func(t *testing.T) {
-				// fmap id == id
+	type TC struct {
+		x int
+	}
 
-				left := curry.A2R1(mt.FMap)(function.Id[bool])
-				right := function.Id[maybe.Maybe[bool]]
+	tcs := []TC{
+		{0},
+		{1},
+		{2},
+	}
 
-				require.Equal(t, left(maybe.Just[bool]{true}), right(maybe.Just[bool]{true}))
-			})
+	for _, tc := range tcs {
+		f.Add(tc.x)
+	}
 
-			t.Run("compose", func(t *testing.T) {
-				// fmap (f . g) == fmap f . fmap g
+	f.Fuzz(maybe.Conform[int](m))
+}
 
-				f := function.Id[bool]
-				g := function.Id[bool]
+func FuzzConformBool(f *testing.F) {
+	m := maybe.NewType[bool, bool, bool]()
 
-				left := curry.A2R1(mt.FMap)(
-					function.Compose(f, g),
-				)
-				right := function.Compose(
-					curry.A2R1(mt.FMap)(f),
-					curry.A2R1(mt.FMap)(g),
-				)
+	type TC struct {
+		x bool
+	}
 
-				require.Equal(t, left(maybe.Just[bool]{true}), right(maybe.Just[bool]{true}))
-			})
-		})
-	})
+	tcs := []TC{
+		{true},
+		{false},
+	}
+
+	for _, tc := range tcs {
+		f.Add(tc.x)
+	}
+
+	f.Fuzz(maybe.Conform[bool](m))
 }
