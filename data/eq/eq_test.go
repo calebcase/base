@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleNewType() {
-	t := eq.NewType[int](eq.Comparable[int])
+	t := eq.NewType(eq.Comparable[int])
 
 	fmt.Println(t.Equal(1, 1))
 	fmt.Println(t.NE(1, 2))
@@ -19,7 +19,7 @@ func ExampleNewType() {
 }
 
 func FuzzConformInt(f *testing.F) {
-	e := eq.NewType[int](eq.Comparable[int])
+	e := eq.NewType(eq.Comparable[int])
 
 	type TC struct {
 		x int
@@ -41,7 +41,7 @@ func FuzzConformInt(f *testing.F) {
 }
 
 func FuzzConformString(f *testing.F) {
-	e := eq.NewType[string](eq.Comparable[string])
+	e := eq.NewType(eq.Comparable[string])
 
 	type TC struct {
 		x string

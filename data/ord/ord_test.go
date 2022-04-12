@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleNewType() {
-	t := ord.NewType[int](ord.Ordered[int])
+	t := ord.NewType(ord.Ordered[int])
 
 	fmt.Println(t.LT(5, 6))
 
@@ -17,7 +17,7 @@ func ExampleNewType() {
 }
 
 func FuzzConformInt(f *testing.F) {
-	o := ord.NewType[int](ord.Ordered[int])
+	o := ord.NewType(ord.Ordered[int])
 
 	type TC struct {
 		x int
@@ -39,7 +39,7 @@ func FuzzConformInt(f *testing.F) {
 }
 
 func FuzzConformString(f *testing.F) {
-	o := ord.NewType[string](ord.Ordered[string])
+	o := ord.NewType(ord.Ordered[string])
 
 	type TC struct {
 		x string

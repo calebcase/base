@@ -20,10 +20,10 @@ func ExampleMaybe() {
 	// type inferencing improves for generics. Alternately the types can be
 	// explicitly set on the Maybe function instead.
 	fmt.Println(maybe.Apply(false, odd, maybe.Maybe[int](maybe.Just[int]{3})))
-	fmt.Println(maybe.Apply[int, bool](false, odd, maybe.Just[int]{3}))
+	fmt.Println(maybe.Apply[int](false, odd, maybe.Just[int]{3}))
 
 	fmt.Println(maybe.Apply(false, odd, maybe.Maybe[int](maybe.Nothing[int]{})))
-	fmt.Println(maybe.Apply[int, bool](false, odd, maybe.Nothing[int]{}))
+	fmt.Println(maybe.Apply[int](false, odd, maybe.Nothing[int]{}))
 
 	// These all produce the desired compile time error (because the types
 	// are mismatched):
