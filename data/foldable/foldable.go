@@ -2,7 +2,9 @@ package foldable
 
 import (
 	"github.com/calebcase/base/data"
+	"github.com/calebcase/base/data/eq"
 	"github.com/calebcase/base/data/monoid"
+	"github.com/calebcase/base/data/ord"
 )
 
 type T[T any] interface{}
@@ -14,6 +16,9 @@ type Class[
 	MA monoid.Class[A],
 	MB monoid.Class[B],
 
+	EA eq.Class[A],
+	OA ord.Class[A],
+
 	TA T[A],
 ] interface {
 	Fold(MA, TA) A
@@ -23,13 +28,13 @@ type Class[
 	FoldL(func(B, A) B, B, TA) B
 
 	ToList(TA) []A
-	//Null(TA) bool
-	//Length(TA) int
+	Null(TA) bool
+	Length(TA) int
 
-	//Elem(E, TE) bool
+	Elem(EA, A, TA) bool
 
-	//Maximum(TO) A
-	//Minimum(TO) A
+	Maximum(OA, TA) A
+	Minimum(OA, TA) A
 
 	//Sum(TN) A
 	//Product(TN) A
@@ -46,6 +51,8 @@ var _ Class[
 	int,
 	monoid.Class[int],
 	monoid.Class[int],
+	eq.Class[int],
+	ord.Class[int],
 	data.Data[int],
 ] = Type[int, int]{}
 
@@ -58,6 +65,11 @@ func NewType[
 
 func (t Type[A, B]) Fold(ma monoid.Class[A], ta data.Data[A]) A {
 	zero := ma.MEmpty()
+
+	if ta.DEmpty() {
+		return zero
+	}
+
 	value := ta.DValue()
 	result := ma.MAppend(zero, value)
 
@@ -70,6 +82,11 @@ func (t Type[A, B]) Fold(ma monoid.Class[A], ta data.Data[A]) A {
 
 func (t Type[A, B]) FoldMap(mb monoid.Class[B], f func(A) B, ta data.Data[A]) B {
 	zero := mb.MEmpty()
+
+	if ta.DEmpty() {
+		return zero
+	}
+
 	value := ta.DValue()
 	result := mb.MAppend(zero, f(value))
 
@@ -81,6 +98,10 @@ func (t Type[A, B]) FoldMap(mb monoid.Class[B], f func(A) B, ta data.Data[A]) B 
 }
 
 func (t Type[A, B]) FoldR(f func(A, B) B, z B, ta data.Data[A]) B {
+	if ta.DEmpty() {
+		return z
+	}
+
 	if ta.DRest() == nil {
 		return f(ta.DValue(), z)
 	}
@@ -89,6 +110,10 @@ func (t Type[A, B]) FoldR(f func(A, B) B, z B, ta data.Data[A]) B {
 }
 
 func (t Type[A, B]) FoldL(f func(B, A) B, z B, ta data.Data[A]) B {
+	if ta.DEmpty() {
+		return z
+	}
+
 	value := ta.DValue()
 	result := f(z, value)
 
@@ -103,4 +128,52 @@ func (t Type[A, B]) ToList(ta data.Data[A]) (result []A) {
 	return NewType[A, []A]().FoldL(func(l []A, x A) []A {
 		return append(l, x)
 	}, []A{}, ta)
+}
+
+func (t Type[A, B]) Null(ta data.Data[A]) bool {
+	return ta.DEmpty()
+}
+
+func (t Type[A, B]) Length(ta data.Data[A]) int {
+	return NewType[A, int]().FoldL(func(total int, x A) int {
+		return total + 1
+	}, 0, ta)
+}
+
+func (t Type[A, B]) Elem(ea eq.Class[A], a A, ta data.Data[A]) bool {
+	if ta.DEmpty() {
+		return false
+	}
+
+	if ea.Equal(a, ta.DValue()) {
+		return true
+	}
+
+	for rest := ta.DRest(); rest != nil; rest = rest.DRest() {
+		if ea.Equal(a, rest.DValue()) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (t Type[A, B]) Maximum(oa ord.Class[A], ta data.Data[A]) A {
+	return NewType[A, A]().FoldL(func(max A, x A) A {
+		if oa.GT(x, max) {
+			return x
+		}
+
+		return max
+	}, ta.DValue(), ta.DRest())
+}
+
+func (t Type[A, B]) Minimum(oa ord.Class[A], ta data.Data[A]) A {
+	return NewType[A, A]().FoldL(func(min A, x A) A {
+		if oa.LT(x, min) {
+			return x
+		}
+
+		return min
+	}, ta.DValue(), ta.DRest())
 }
