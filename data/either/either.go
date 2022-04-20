@@ -43,11 +43,11 @@ var _ data.Data[int] = Left[int, string]{}
 func (l Left[A, B]) isEither(_ A, _ B) {}
 
 func (l Left[A, B]) DEmpty() bool {
-	return false
+	return true
 }
 
 func (l Left[A, B]) DValue() A {
-	return l.Value
+	panic(data.ErrNoValue)
 }
 
 func (l Left[A, B]) DRest() data.Data[A] {
