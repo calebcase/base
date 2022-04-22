@@ -177,3 +177,41 @@ func (t Type[A, B]) Minimum(oa ord.Class[A], ta data.Data[A]) A {
 		return min
 	}, ta.DValue(), ta.DRest())
 }
+
+// Special biased folds
+
+//TODO: foldrM
+//TODO: foldlM
+
+// Folding actions
+
+//TODO: traverse_
+//TODO: for_
+//TODO: sequenceA_
+//TODO: asum
+
+// Monadic actions
+
+//TODO: mapM_
+//TODO: forM_
+//TODO: sequence_
+//TODO: msum
+
+// Specialized folds
+
+func Concat[
+	A any,
+	FA Class[
+		A,
+		A,
+		monoid.Class[A],
+		monoid.Class[A],
+		eq.Class[A],
+		ord.Class[A],
+		data.Data[A],
+	],
+	MA monoid.Class[A],
+	DA data.Data[A],
+](fa FA, ma MA, ta DA) A {
+	return fa.Fold(ma, ta)
+}

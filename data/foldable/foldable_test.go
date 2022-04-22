@@ -3,6 +3,7 @@ package foldable_test
 import (
 	"fmt"
 
+	"github.com/calebcase/base/data/either"
 	"github.com/calebcase/base/data/eq"
 	"github.com/calebcase/base/data/foldable"
 	"github.com/calebcase/base/data/function"
@@ -214,4 +215,54 @@ func ExampleType_Minimum_string() {
 
 	// Output:
 	// a
+}
+
+func ExampleConcat_maybe() {
+	t := foldable.NewType[list.List[int], list.List[int]]()
+
+	jl := maybe.Just[list.List[int]]{
+		Value: list.List[int]{1, 2, 3},
+	}
+
+	lt := list.NewType[int]()
+
+	fmt.Println(foldable.Concat[list.List[int]](t, lt, jl))
+
+	// Output:
+	// [1 2 3]
+}
+
+func ExampleConcat_either() {
+	t := foldable.NewType[list.List[int], list.List[int]]()
+
+	ll := either.Left[list.List[int], list.List[int]]{
+		Value: list.List[int]{42},
+	}
+
+	lt := list.NewType[int]()
+
+	// FIXME: This should return empty list, but instead it returns the
+	// same as Right.
+	fmt.Println(foldable.Concat[list.List[int]](t, lt, ll))
+
+	// Output:
+	// []
+}
+
+func ExampleConcat_listlist() {
+	t := foldable.NewType[list.List[int], list.List[int]]()
+
+	ll := list.List[list.List[int]]{
+		{1, 2, 3},
+		{4, 5},
+		{6},
+		{},
+	}
+
+	lt := list.NewType[int]()
+
+	fmt.Println(foldable.Concat[list.List[int]](t, lt, ll))
+
+	// Output:
+	// [1 2 3 4 5 6]
 }
