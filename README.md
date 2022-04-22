@@ -64,7 +64,7 @@ constructors with a switch statement.
 
 This pattern is hinted at in the [faq][go:faq:variant_types] and concrete
 examples are found in the Go source code for the [ast][go:src:ast:Expr]
-package. I found Jerf's blog entry on [sum types][jerf:sum_types] to be
+package. I found Jerf's blog entry on [sum types][jerf:sum_type] to be
 enlightening. It is common enough that a linter exists
 [go-sumtype][go-sumtype].
 
@@ -124,6 +124,12 @@ fmt.Println(Maybe[int](Just[float32]{3}))
 
 Go build failed.
 ```
+
+### Type Classes
+
+### Deriving
+
+### Obey the Laws
 
 ---
 
