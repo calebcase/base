@@ -125,12 +125,6 @@ fmt.Println(Maybe[int](Just[float32]{3}))
 Go build failed.
 ```
 
-### Type Classes
-
-### Deriving
-
-### Obey the Laws
-
 ---
 
 [base]: https://hackage.haskell.org/package/base-4.16.0.0/docs/index.html
