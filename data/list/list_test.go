@@ -4,11 +4,100 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"testing"
 
 	"github.com/calebcase/base/data/list"
 )
+
+func ExampleMap() {
+	fmt.Println(
+		list.Map(
+			func(x int) int {
+				return x + 1
+			},
+			list.List[int]{1, 2, 3},
+		),
+	)
+
+	// Output:
+	// [2 3 4]
+}
+
+func ExampleReverse() {
+	fmt.Println(list.Reverse(list.List[int]{}))
+	fmt.Println(list.Reverse(list.List[int]{42}))
+	fmt.Println(list.Reverse(list.List[int]{2, 5, 7}))
+
+	// Output:
+	// []
+	// [42]
+	// [7 5 2]
+}
+
+func ExampleIntersperse() {
+	fmt.Println(string(list.Intersperse(',', list.List[byte]("abcde"))))
+
+	// Output:
+	// a,b,c,d,e
+}
+
+func ExampleIntercalate_listbyte() {
+	fmt.Println(string(list.Intercalate(
+		list.List[byte](", "),
+		list.List[list.List[byte]]{
+			list.List[byte]("Lorem"),
+			list.List[byte]("ipsum"),
+			list.List[byte]("dolor"),
+		},
+	)))
+
+	// Output:
+	// Lorem, ipsum, dolor
+}
+
+func ExampleIntercalate_arraybyte() {
+	fmt.Println(string(list.Intercalate(
+		[]byte(", "),
+		[][]byte{
+			[]byte("Lorem"),
+			[]byte("ipsum"),
+			[]byte("dolor"),
+		},
+	)))
+
+	// Output:
+	// Lorem, ipsum, dolor
+}
+
+func ExampleTranspose_equal() {
+	fmt.Println(list.Transpose([][]int{{1, 2, 3}, {4, 5, 6}}))
+
+	// Output:
+	// [[1 4] [2 5] [3 6]]
+}
+
+func ExampleTranspose_mixed() {
+	fmt.Println(list.Transpose([][]int{{10, 11}, {20}, {}, {30, 31, 32}}))
+
+	// Output:
+	// [[10 20 30] [11 31] [32]]
+}
+
+func ExampleNonEmptySubsequences() {
+	fmt.Println(list.NonEmptySubsequences([]int{1, 2, 3}))
+
+	// Output:
+	// [[1] [2] [1 2] [3] [1 3] [2 3] [1 2 3]]
+}
+
+func ExampleSubsequences() {
+	fmt.Println(list.Subsequences([]int{1, 2, 3}))
+
+	// Output:
+	// [[] [1] [2] [1 2] [3] [1 3] [2 3] [1 2 3]]
+}
 
 func i2b(is []int32) (bs []byte) {
 	buf := &bytes.Buffer{}
