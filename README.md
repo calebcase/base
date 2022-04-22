@@ -110,7 +110,7 @@ type Nothing[A any] struct{}
 func (n Nothing[A]) isMaybe(_ A) {}
 ```
 
-This now properly [rejects the type mismatch][https://go.dev/play/p/sWIigIgR_yJ]:
+This now properly [rejects the type mismatch](https://go.dev/play/p/sWIigIgR_yJ):
 
 ```go
 fmt.Println(Maybe[int](Just[float32]{3}))
